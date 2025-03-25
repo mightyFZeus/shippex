@@ -2,6 +2,7 @@ import UIKit
 import React
 import React_RCTAppDelegate
 import ReactAppDependencyProvider
+import RNBootSplash 
 
 @main
 class AppDelegate: RCTAppDelegate {
@@ -13,7 +14,14 @@ class AppDelegate: RCTAppDelegate {
     // They will be passed down to the ViewController used by React Native.
     self.initialProps = [:]
 
-    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+    let result = super.application(application, didFinishLaunchingWithOptions: launchOptions)
+
+    // Ensure the root view exists before initializing RNBootSplash
+    if let rootView = self.window.rootViewController?.view {
+      RNBootSplash.initWithStoryboard("BootSplash", rootView: rootView)
+    }
+
+    return result
   }
 
   override func sourceURL(for bridge: RCTBridge) -> URL? {
@@ -22,9 +30,9 @@ class AppDelegate: RCTAppDelegate {
 
   override func bundleURL() -> URL? {
 #if DEBUG
-    RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "index")
+    return RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "index")
 #else
-    Bundle.main.url(forResource: "main", withExtension: "jsbundle")
+    return Bundle.main.url(forResource: "main", withExtension: "jsbundle")
 #endif
   }
 }
